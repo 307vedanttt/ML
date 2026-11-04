@@ -1,0 +1,35 @@
+# Cell 1
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+
+# Cell 2
+marks = np.array([75, 80, 65, 90, 85])
+student = np.array(["A", "B", "C", "D", "E"])
+
+df = pd.DataFrame({
+    "student": student,
+    "Marks": marks
+})
+
+print("student marks:")
+print(df)
+
+
+
+# Cell 3
+print("Max marks:", np.max(marks))
+print("Min marks:", np.min(marks))
+print("Sum marks:", np.sum(marks))
+print("Avg marks:", np.mean(marks))
+
+
+
+# Cell 4
+plt.bar(df["student"], df["Marks"])
+plt.title("Student marks")
+plt.xlabel("Student")
+plt.ylabel("Marks")
+plt.show()

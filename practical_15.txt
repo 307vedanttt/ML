@@ -1,0 +1,113 @@
+# Cell 1
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+
+
+# Cell 2
+data = load_iris()
+X = data.data
+y = data.target
+
+df = pd.DataFrame(X, columns=data.feature_names)
+df['Target'] = y
+df.head()
+
+
+
+# Cell 3
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+
+
+# Cell 4
+model = DecisionTreeClassifier(random_state=42)
+print("Decision Tree Model Created")
+
+
+
+# Cell 5
+param_grid = {
+    'max_depth': [2, 3, 4, 5, None],
+    'criterion': ['gini', 'entropy'],
+    'min_samples_split': [2, 5, 10]
+}
+print(param_grid)
+
+
+
+# Cell 6
+grid_search = GridSearchCV(
+    estimator=model,
+    param_grid=param_grid,
+    cv=5,
+    scoring='accuracy'
+)
+grid_search.fit(X_train, y_train)
+print("Grid Search Completed")
+
+
+
+# Cell 7
+print("Best Parameters:")
+print(grid_search.best_params_)
+print("\nBest Cross Validation Accuracy:")
+print(grid_search.best_score_)
+
+
+
+# Cell 8
+best_model = grid_search.best_estimator_
+y_pred = best_model.predict(X_test)
+print("Actual Values:", y_test)
+print("Predicted Values:", y_pred)
+
+
+
+# Cell 9
+accuracy = accuracy_score(y_test, y_pred)
+print("Test Accuracy:", accuracy)
+print("Test Accuracy Percentage:", accuracy * 100, "%")
+
+
+
+# Cell 10
+print(classification_report(
+    y_test,
+    y_pred,
+    target_names=data.target_names
+))
+
+
+
+# Cell 11
+results = pd.DataFrame(grid_search.cv_results_)
+comparison = results[
+    ['param_max_depth', 'param_criterion', 
+     'param_min_samples_split', 'mean_test_score']
+]
+comparison = comparison.sort_values(
+    by='mean_test_score',
+    ascending=False
+)
+comparison.head(10)
+
+
+
+# Cell 12
+plt.figure(figsize=(8, 5))
+plt.bar(
+    ['Best CV Accuracy', 'Test Accuracy'],
+    [grid_search.best_score_, accuracy]
+)
+plt.ylabel('Accuracy')
+plt.title('Grid Search Model Performance')
+plt.ylim(0, 1.1)
+plt.show()

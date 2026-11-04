@@ -1,0 +1,126 @@
+# Cell 1
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+
+
+# Cell 2
+data = load_iris()
+X = data.data
+y = data.target
+
+df = pd.DataFrame(X, columns=data.feature_names)
+df['Target'] = y
+df.head()
+
+
+
+# Cell 3
+print("Dataset Shape:", df.shape)
+print("\nTarget Classes:")
+print(data.target_names)
+print("\nMissing Values:")
+print(df.isnull().sum().sum())
+
+
+
+# Cell 4
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+
+
+# Cell 5
+dt_model = DecisionTreeClassifier(
+    max_depth=3,
+    random_state=42
+)
+dt_model.fit(X_train, y_train)
+dt_pred = dt_model.predict(X_test)
+print("Decision Tree Training Successful")
+
+
+
+# Cell 6
+rf_model = RandomForestClassifier(
+    n_estimators=100,
+    random_state=42
+)
+rf_model.fit(X_train, y_train)
+rf_pred = rf_model.predict(X_test)
+print("Random Forest Training Successful")
+
+
+
+# Cell 7
+dt_accuracy = accuracy_score(y_test, dt_pred)
+rf_accuracy = accuracy_score(y_test, rf_pred)
+print("Decision Tree Accuracy:", dt_accuracy * 100, "%")
+print("Random Forest Accuracy:", rf_accuracy * 100, "%")
+
+
+
+# Cell 8
+comparison = pd.DataFrame({
+    'Model': ['Decision Tree', 'Random Forest'],
+    'Accuracy': [dt_accuracy, rf_accuracy]
+})
+comparison
+
+
+
+# Cell 9
+plt.bar(comparison['Model'], comparison['Accuracy'])
+plt.xlabel('Models')
+plt.ylabel('Accuracy')
+plt.title('Decision Tree vs Random Forest')
+plt.ylim(0, 1.1)
+plt.show()
+
+
+
+# Cell 10
+cm = confusion_matrix(y_test, rf_pred)
+print("Random Forest Confusion Matrix:")
+print(cm)
+
+plt.imshow(cm, cmap='Blues')
+plt.title("Random Forest Confusion Matrix")
+plt.xlabel("Predicted Values")
+plt.ylabel("Actual Values")
+plt.xticks([0, 1, 2], data.target_names)
+plt.yticks([0, 1, 2], data.target_names)
+
+for i in range(3):
+    for j in range(3):
+        plt.text(j, i, cm[i, j], ha='center', va='center')
+
+plt.colorbar()
+plt.show()
+
+
+
+# Cell 11
+print("Random Forest Classification Report:")
+print(classification_report(
+    y_test,
+    rf_pred,
+    target_names=data.target_names
+))
+
+
+
+# Cell 12
+importance = rf_model.feature_importances_
+plt.barh(data.feature_names, importance)
+plt.xlabel("Importance")
+plt.ylabel("Features")
+plt.title("Random Forest Feature Importance")
+plt.show()

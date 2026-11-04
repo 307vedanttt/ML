@@ -1,0 +1,27 @@
+# Cell 1
+from sklearn.datasets import make_regression
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
+from sklearn.metrics import r2_score
+
+
+
+# Cell 2
+X, y = make_regression(n_samples=100, n_features=5, noise=10, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+
+
+# Cell 3
+lr = LinearRegression().fit(X_train, y_train)
+ridge = Ridge(alpha=1.0).fit(X_train, y_train)
+lasso = Lasso(alpha=1.0).fit(X_train, y_train)
+elastic = ElasticNet(alpha=1.0).fit(X_train, y_train)
+
+
+
+# Cell 4
+print("Linear Regression R2 :", r2_score(y_test, lr.predict(X_test)))
+print("Ridge Regression R2  :", r2_score(y_test, ridge.predict(X_test)))
+print("Lasso Regression R2  :", r2_score(y_test, lasso.predict(X_test)))
+print("Elastic Net R2       :", r2_score(y_test, elastic.predict(X_test)))

@@ -1,0 +1,82 @@
+# Cell 1
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import DBSCAN
+from sklearn.metrics import silhouette_score
+
+
+
+# Cell 2
+data = load_iris()
+X = data.data
+df = pd.DataFrame(X, columns=data.feature_names)
+df.head()
+
+
+
+# Cell 3
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+print("Data Standardized Successfully")
+
+
+
+# Cell 4
+model = DBSCAN(eps=0.8, min_samples=5)
+y_pred = model.fit_predict(X_scaled)
+print("DBSCAN Clustering Completed")
+
+
+
+# Cell 5
+df['Cluster'] = y_pred
+print(df.head(10))
+
+
+
+# Cell 6
+print("Cluster Distribution:")
+print(df['Cluster'].value_counts())
+
+noise = np.sum(y_pred == -1)
+print("Noise Points:", noise)
+
+
+
+# Cell 7
+plt.figure(figsize=(8, 5))
+plt.scatter(
+    X_scaled[:, 0],
+    X_scaled[:, 1],
+    c=y_pred,
+    cmap='rainbow'
+)
+plt.xlabel('Sepal Length')
+plt.ylabel('Sepal Width')
+plt.title('DBSCAN Clustering')
+plt.show()
+
+
+
+# Cell 8
+labels = set(y_pred)
+
+if len(labels - {-1}) > 1:
+    mask = y_pred != -1
+    score = silhouette_score(
+        X_scaled[mask],
+        y_pred[mask]
+    )
+    print("Silhouette Score:", score)
+else:
+    print("Silhouette Score cannot be calculated")
+
+
+
+# Cell 9
+n_clusters = len(set(y_pred) - {-1})
+print("Number of Clusters:", n_clusters)
+print("Number of Noise Points:", np.sum(y_pred == -1))

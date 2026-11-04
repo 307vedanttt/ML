@@ -1,0 +1,93 @@
+# Cell 1
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+
+
+# Cell 2
+data = load_breast_cancer()
+X = data.data
+y = data.target
+
+df = pd.DataFrame(X, columns=data.feature_names)
+df['Target'] = y
+df.head()
+
+
+
+# Cell 3
+print("Dataset Shape:", df.shape)
+print("Target Classes:")
+print(data.target_names)
+print("\nMissing Values:")
+print(df.isnull().sum().sum())
+
+
+
+# Cell 4
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+
+
+# Cell 5
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+
+
+# Cell 6
+model = LogisticRegression()
+model.fit(X_train, y_train)
+print("Model Training Successful")
+
+
+
+# Cell 7
+y_pred = model.predict(X_test)
+print("Actual Values:", y_test[:10])
+print("Predicted Values:", y_pred[:10])
+
+
+
+# Cell 8
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy:", accuracy)
+print("Accuracy Percentage:", accuracy * 100, "%")
+
+
+
+# Cell 9
+cm = confusion_matrix(y_test, y_pred)
+print("Confusion Matrix:")
+print(cm)
+
+
+
+# Cell 10
+plt.imshow(cm, cmap='Blues')
+plt.title('Confusion Matrix')
+plt.xlabel('Predicted Values')
+plt.ylabel('Actual Values')
+plt.xticks([0, 1], data.target_names)
+plt.yticks([0, 1], data.target_names)
+
+for i in range(2):
+    for j in range(2):
+        plt.text(j, i, cm[i, j], ha='center', va='center')
+
+plt.colorbar()
+plt.show()
+
+
+
+# Cell 11
+print(classification_report(y_test, y_pred, target_names=data.target_names))

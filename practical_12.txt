@@ -1,0 +1,79 @@
+# Cell 1
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import AgglomerativeClustering
+from scipy.cluster.hierarchy import dendrogram, linkage
+
+
+
+# Cell 2
+data = load_iris()
+X = data.data
+df = pd.DataFrame(X, columns=data.feature_names)
+df.head()
+
+
+
+# Cell 3
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+print("Data Standardized Successfully")
+
+
+
+# Cell 4
+plt.figure(figsize=(12, 6))
+linked = linkage(X_scaled, method='ward')
+dendrogram(linked)
+plt.title("Hierarchical Clustering Dendrogram")
+plt.xlabel("Data Points")
+plt.ylabel("Euclidean Distance")
+plt.show()
+
+
+
+# Cell 5
+model = AgglomerativeClustering(
+    n_clusters=3,
+    linkage='ward'
+)
+y_pred = model.fit_predict(X_scaled)
+print("Clustering Completed Successfully")
+
+
+
+# Cell 6
+df['Cluster'] = y_pred
+print(df.head(10))
+
+
+
+# Cell 7
+plt.figure(figsize=(8, 5))
+plt.scatter(
+    X_scaled[:, 0],
+    X_scaled[:, 1],
+    c=y_pred,
+    cmap='rainbow'
+)
+plt.xlabel('Sepal Length')
+plt.ylabel('Sepal Width')
+plt.title('Agglomerative Hierarchical Clustering')
+plt.show()
+
+
+
+# Cell 8
+print("Cluster Distribution:")
+print(df['Cluster'].value_counts())
+
+
+
+# Cell 9
+from sklearn.metrics import silhouette_score
+
+score = silhouette_score(X_scaled, y_pred)
+print("Silhouette Score:", score)

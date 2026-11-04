@@ -1,0 +1,64 @@
+# Cell 1
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+
+# Cell 2
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+
+
+
+# Cell 3
+iris = load_iris()
+
+X = iris.data
+y = iris.target
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+
+
+# Cell 4
+k_values = range(1, 16)
+accuracies = []
+
+print("K Value\tAccuracy")
+
+for k in k_values:
+    knn = KNeighborsClassifier(n_neighbors=k)
+    knn.fit(X_train, y_train)
+
+    y_pred = knn.predict(X_test)
+
+    accuracy = accuracy_score(y_test, y_pred)
+    accuracies.append(accuracy)
+
+    print(f"{k}\t\t{accuracy:.2f}")
+
+
+
+# Cell 5
+best_k = k_values[np.argmax(accuracies)]
+best_accuracy = max(accuracies)
+
+print("\nBest K =", best_k)
+print("Highest Accuracy =", round(best_accuracy, 2))
+
+
+
+# Cell 6
+plt.figure(figsize=(8, 5))
+plt.plot(k_values, accuracies, marker='o')
+plt.title("K Value vs Accuracy")
+plt.xlabel("Value of K")
+plt.ylabel("Accuracy")
+plt.xticks(k_values)
+plt.grid(True)
+plt.show()

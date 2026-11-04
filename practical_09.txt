@@ -1,0 +1,122 @@
+# Cell 1
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+
+
+# Cell 2
+data = load_iris()
+X = data.data
+y = data.target
+
+df = pd.DataFrame(X, columns=data.feature_names)
+df['Target'] = y
+df.head()
+
+
+
+# Cell 3
+print("Dataset Shape:", df.shape)
+print("\nTarget Classes:")
+print(data.target_names)
+print("\nMissing Values:")
+print(df.isnull().sum().sum())
+
+
+
+# Cell 4
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+
+
+# Cell 5
+model = DecisionTreeClassifier(
+    criterion='gini',
+    max_depth=3,
+    random_state=42
+)
+model.fit(X_train, y_train)
+print("Model Training Successful")
+
+
+
+# Cell 6
+y_pred = model.predict(X_test)
+print("Actual Values:", y_test)
+print("Predicted Values:", y_pred)
+
+
+
+# Cell 7
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy:", accuracy)
+print("Accuracy Percentage:", accuracy * 100, "%")
+
+
+
+# Cell 8
+cm = confusion_matrix(y_test, y_pred)
+print("Confusion Matrix:")
+print(cm)
+
+
+
+# Cell 9
+plt.figure(figsize=(15, 8))
+plot_tree(
+    model,
+    feature_names=data.feature_names,
+    class_names=data.target_names,
+    filled=True
+)
+plt.title("Decision Tree Visualization")
+plt.show()
+
+
+
+# Cell 10
+depths = [1, 2, 3, 4, 5, 10, None]
+train_scores = []
+test_scores = []
+
+for depth in depths:
+    tree = DecisionTreeClassifier(
+        max_depth=depth,
+        random_state=42
+    )
+    tree.fit(X_train, y_train)
+    train_scores.append(accuracy_score(y_train, tree.predict(X_train)))
+    test_scores.append(accuracy_score(y_test, tree.predict(X_test)))
+    print("Depth:", depth)
+    print("Training Accuracy:", train_scores[-1])
+    print("Testing Accuracy:", test_scores[-1])
+    print("----------------------")
+
+
+
+# Cell 11
+depth_labels = ['1', '2', '3', '4', '5', '10', 'None']
+plt.plot(depth_labels, train_scores, marker='o', label='Training Accuracy')
+plt.plot(depth_labels, test_scores, marker='o', label='Testing Accuracy')
+plt.xlabel("Maximum Tree Depth")
+plt.ylabel("Accuracy")
+plt.title("Effect of Tree Depth on Accuracy")
+plt.legend()
+plt.grid()
+plt.show()
+
+
+
+# Cell 12
+print(classification_report(
+    y_test,
+    y_pred,
+    target_names=data.target_names
+))

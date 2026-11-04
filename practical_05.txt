@@ -1,0 +1,75 @@
+# Cell 1
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+
+
+# Cell 2
+data = {
+    'Hrs studied': [2, 4, 5, 7, 8, 3, 6, 9, 1, 5],
+    'Sleep Hours': [7, 8, 6, 7, 8, 7, 6, 8, 6, 7],
+    'Attendance': [75, 80, 85, 90, 95, 70, 85, 95, 60, 80],
+    'Marks': [50, 65, 70, 85, 90, 55, 75, 95, 40, 70]
+}
+df = pd.DataFrame(data)
+df
+
+
+
+# Cell 3
+x = df[['Hrs studied', 'Sleep Hours', 'Attendance']]
+y = df['Marks']
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+
+
+
+# Cell 4
+model = LinearRegression()
+model.fit(x_train, y_train)
+print("Model Training successful")
+
+
+
+# Cell 5
+y_pred = model.predict(x_test)
+print("Actual Values:", list(y_test))
+print("Predicted Values:", y_pred)
+
+
+
+# Cell 6
+mae = mean_absolute_error(y_test, y_pred)
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+r2 = r2_score(y_test, y_pred)
+
+print("MAE:", mae)
+print("MSE:", mse)
+print("RMSE:", rmse)
+print("R2 Score:", r2)
+
+
+
+# Cell 7
+print("Intercept:", model.intercept_)
+print("coef:")
+for feature, coef in zip(x.columns, model.coef_):
+    print(feature, ":", coef)
+
+
+
+# Cell 8
+new_data = pd.DataFrame({
+    'Hrs studied': [6],
+    'Sleep Hours': [7],
+    'Attendance': [85]
+})
+
+prediction = model.predict(new_data)
+print("predicted Marks:", prediction[0])
